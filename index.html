@@ -1,0 +1,611 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080e20">
+
+<title>NURUL PHOTO PUZZLE</title>
+
+<style>
+*{
+ box-sizing:border-box;
+ margin:0;
+ padding:0;
+}
+
+body{
+ min-height:100vh;
+ padding:20px 12px;
+ background:radial-gradient(circle at top,#26385d,#080e20 75%);
+ color:white;
+ font-family:Arial,sans-serif;
+ text-align:center;
+}
+
+h1{
+ color:#ff91bd;
+ font-size:25px;
+ letter-spacing:2px;
+ margin:12px 0;
+}
+
+.subtitle{
+ color:#c4cee2;
+ margin-bottom:20px;
+}
+
+.panel{
+ max-width:480px;
+ margin:auto;
+ padding:16px;
+ background:#111d35;
+ border:1px solid #405071;
+ border-radius:22px;
+ box-shadow:0 15px 40px #0007;
+}
+
+.upload{
+ display:block;
+ padding:14px;
+ background:#202f4c;
+ border:1px dashed #ff91bd;
+ border-radius:12px;
+ margin-bottom:15px;
+ color:#ffb6d2;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.upload input{
+ display:none;
+}
+
+.stats{
+ display:flex;
+ gap:8px;
+ margin-bottom:15px;
+}
+
+.stats div{
+ flex:1;
+ padding:11px 5px;
+ background:#202f4c;
+ border-radius:12px;
+ font-size:12px;
+ color:#cbd4e8;
+}
+
+.stats b{
+ display:block;
+ color:#ff9bc5;
+ font-size:21px;
+ margin-top:5px;
+}
+
+#puzzle{
+ display:grid;
+ grid-template-columns:repeat(6,1fr);
+ gap:3px;
+ width:100%;
+ aspect-ratio:1;
+ padding:4px;
+ background:#35445f;
+ border-radius:10px;
+ overflow:hidden;
+}
+
+.tile{
+ min-width:0;
+ min-height:0;
+ border:1px solid #8292af;
+ border-radius:3px;
+ background-repeat:no-repeat;
+ cursor:pointer;
+ touch-action:manipulation;
+ transition:transform .15s,filter .15s;
+}
+
+.tile.selected{
+ border:3px solid #ff65a9;
+ transform:scale(.91);
+ filter:brightness(1.35);
+}
+
+button{
+ border:0;
+ padding:12px 13px;
+ margin:5px 2px;
+ border-radius:11px;
+ background:#ff83b8;
+ color:#17172b;
+ font-weight:bold;
+ cursor:pointer;
+ font-size:12px;
+}
+
+button:active{
+ transform:scale(.95);
+}
+
+button:disabled{
+ opacity:.4;
+}
+
+#message{
+ color:#ffb6d2;
+ margin-top:15px;
+ line-height:1.7;
+}
+
+#preview{
+ display:none;
+ width:100%;
+ margin-top:15px;
+ border:2px solid #ff91bd;
+ border-radius:12px;
+}
+
+#preview.show{
+ display:block;
+}
+
+.footer{
+ color:#8998b4;
+ font-size:12px;
+ margin-top:22px;
+}
+
+.victory{
+ padding:22px 8px;
+ animation:appear 1s ease;
+}
+
+.victory h2{
+ color:#ff91bd;
+ font-size:24px;
+ margin:15px 0;
+}
+
+.victory h3{
+ color:#ff91bd;
+ margin:15px 0;
+}
+
+.victory p{
+ line-height:1.8;
+ margin:12px 0;
+}
+
+.heart{
+ font-size:36px;
+ animation:heartbeat 1s infinite;
+}
+
+#confetti{
+ position:fixed;
+ inset:0;
+ pointer-events:none;
+ overflow:hidden;
+ z-index:10;
+}
+
+.confetti-piece{
+ position:absolute;
+ top:-20px;
+ width:9px;
+ height:14px;
+ animation:fall 3s linear forwards;
+}
+
+@keyframes appear{
+ from{opacity:0;transform:scale(.5)}
+ to{opacity:1;transform:scale(1)}
+}
+
+@keyframes heartbeat{
+ 50%{transform:scale(1.2)}
+}
+
+@keyframes fall{
+ to{
+  transform:translateY(110vh) rotate(720deg);
+  opacity:0;
+ }
+}
+</style>
+</head>
+
+<body>
+
+<h1>💗 NURUL PHOTO PUZZLE</h1>
+
+<p class="subtitle">
+ A Special Challenge Just For You
+</p>
+
+<div class="panel">
+
+<label class="upload">
+ 📷 PILIH FOTO DARI GALERI
+ <input
+  type="file"
+  id="photoInput"
+  accept="image/*">
+</label>
+
+<div class="stats">
+
+ <div>
+  TIME
+  <b id="time">00:00</b>
+ </div>
+
+ <div>
+  MOVES
+  <b id="moves">0</b>
+ </div>
+
+ <div>
+  PROGRESS
+  <b id="progress">0%</b>
+ </div>
+
+</div>
+
+<div id="puzzle"></div>
+
+<div id="message">
+ Pilih foto terlebih dahulu untuk memulai permainan! 💕
+</div>
+
+<button onclick="shuffleGame()" id="shuffleBtn" disabled>
+ 🔀 SHUFFLE
+</button>
+
+<button onclick="togglePreview()" id="previewBtn" disabled>
+ 👁 PREVIEW
+</button>
+
+<button onclick="shuffleGame()" id="restartBtn" disabled>
+ ↻ RESTART
+</button>
+
+<img id="preview" alt="Foto asli">
+
+</div>
+
+<div class="footer">
+ DEVELOPED WITH ❤️ BY DERiiLNAY
+</div>
+
+<div id="confetti"></div>
+
+<script>
+
+const SIZE=6;
+const TOTAL=SIZE*SIZE;
+
+let order=[];
+let selected=null;
+let moves=0;
+let seconds=0;
+let timer=null;
+let started=false;
+let photoReady=false;
+let photoURL="";
+let previewVisible=false;
+
+const puzzle=document.getElementById("puzzle");
+const message=document.getElementById("message");
+const input=document.getElementById("photoInput");
+
+const shuffleBtn=document.getElementById("shuffleBtn");
+const previewBtn=document.getElementById("previewBtn");
+const restartBtn=document.getElementById("restartBtn");
+
+input.addEventListener("change",function(){
+
+ const file=this.files[0];
+
+ if(!file)return;
+
+ if(!file.type.startsWith("image/")){
+  message.innerText="File harus berupa gambar!";
+  return;
+ }
+
+ const reader=new FileReader();
+
+ reader.onload=function(e){
+
+  const img=new Image();
+
+  img.onload=function(){
+
+   const canvas=document.createElement("canvas");
+   const ctx=canvas.getContext("2d");
+
+   const side=Math.min(
+    img.naturalWidth,
+    img.naturalHeight
+   );
+
+   const x=(img.naturalWidth-side)/2;
+   const y=(img.naturalHeight-side)/2;
+
+   canvas.width=600;
+   canvas.height=600;
+
+   ctx.drawImage(
+    img,x,y,side,side,
+    0,0,600,600
+   );
+
+   photoURL=canvas.toDataURL("image/jpeg",0.9);
+
+   document.getElementById("preview").src=photoURL;
+
+   photoReady=true;
+
+   shuffleBtn.disabled=false;
+   previewBtn.disabled=false;
+   restartBtn.disabled=false;
+
+   message.innerText=
+    "Foto berhasil dimuat! Siap bermain? 💗";
+
+   shuffleGame();
+  };
+
+  img.src=e.target.result;
+ };
+
+ reader.readAsDataURL(file);
+
+});
+
+function shuffleGame(){
+
+ if(!photoReady)return;
+
+ clearInterval(timer);
+
+ order=Array.from(
+  {length:TOTAL},
+  (_,i)=>i
+ );
+
+ // Acak dengan Fisher-Yates
+ for(let i=order.length-1;i>0;i--){
+
+  let j=Math.floor(Math.random()*(i+1));
+
+  [order[i],order[j]]=
+  [order[j],order[i]];
+ }
+
+ // Pastikan tidak langsung selesai
+ if(order.every((v,i)=>v===i)){
+  [order[0],order[1]]=
+  [order[1],order[0]];
+ }
+
+ selected=null;
+ moves=0;
+ seconds=0;
+ started=true;
+
+ document.getElementById("preview").classList.remove("show");
+ previewVisible=false;
+
+ render();
+ updateStats();
+
+ message.innerText=
+  "Susun 36 potongan foto hingga menjadi gambar utuh!";
+
+ timer=setInterval(()=>{
+  if(started){
+   seconds++;
+   updateStats();
+  }
+ },1000);
+}
+
+function render(){
+
+ puzzle.innerHTML="";
+
+ order.forEach((value,index)=>{
+
+  const tile=document.createElement("div");
+
+  tile.className="tile";
+
+  const row=Math.floor(value/SIZE);
+  const col=value%SIZE;
+
+  tile.style.backgroundImage=`url("${photoURL}")`;
+
+  tile.style.backgroundSize="600% 600%";
+
+  tile.style.backgroundPosition=
+   `${col*20}% ${row*20}%`;
+
+  if(selected===index){
+   tile.classList.add("selected");
+  }
+
+  tile.addEventListener("click",()=>{
+   chooseTile(index);
+  });
+
+  puzzle.appendChild(tile);
+
+ });
+}
+
+function chooseTile(index){
+
+ if(!started)return;
+
+ if(selected===null){
+  selected=index;
+  render();
+  return;
+ }
+
+ if(selected===index){
+  selected=null;
+  render();
+  return;
+ }
+
+ [order[selected],order[index]]=
+ [order[index],order[selected]];
+
+ selected=null;
+ moves++;
+
+ render();
+ updateStats();
+
+ if(order.every((v,i)=>v===i)){
+  winGame();
+ }
+}
+
+function updateStats(){
+
+ const min=String(
+  Math.floor(seconds/60)
+ ).padStart(2,"0");
+
+ const sec=String(
+  seconds%60
+ ).padStart(2,"0");
+
+ document.getElementById("time").innerText=
+ min+":"+sec;
+
+ document.getElementById("moves").innerText=
+ moves;
+
+ const correct=order.filter(
+  (v,i)=>v===i
+ ).length;
+
+ document.getElementById("progress").innerText=
+ Math.round(correct/TOTAL*100)+"%";
+}
+
+function togglePreview(){
+
+ const preview=document.getElementById("preview");
+
+ previewVisible=!previewVisible;
+
+ preview.classList.toggle(
+  "show",
+  previewVisible
+ );
+
+ previewBtn.innerText=
+  previewVisible?"🙈 HIDE PREVIEW":"👁 PREVIEW";
+}
+
+function winGame(){
+
+ clearInterval(timer);
+ started=false;
+
+ updateStats();
+
+ document.getElementById("progress").innerText="100%";
+
+ message.innerHTML=`
+
+ <div class="victory">
+
+  <div class="heart">💖🌸💖</div>
+
+  <h2>CONGRATULATIONS, NURUL!</h2>
+
+  <p>
+   Yeayyy! Kamu berhasil menyelesaikan
+   seluruh 36 potongan puzzle! 🥰
+  </p>
+
+  <p>
+   Tidak mudah menyatukan semua potongan,
+   tetapi kamu berhasil melakukannya
+   dengan kesabaran dan ketelitian.
+  </p>
+
+  <h3>YOU DID IT! 🌟</h3>
+
+  <p>
+   Semoga semangatmu selalu menyala,
+   senyummu selalu terjaga,
+   dan hari-harimu dipenuhi kebahagiaan.
+  </p>
+
+  <div class="heart">💕🌷💕</div>
+
+  <p>
+   Keep smiling and keep shining!
+  </p>
+
+  <h3>WITH LOVE, DERiiLNAY ❤️</h3>
+
+ </div>
+ `;
+
+ launchConfetti();
+}
+
+function launchConfetti(){
+
+ const container=document.getElementById("confetti");
+
+ container.innerHTML="";
+
+ const colors=[
+  "#ff70ad",
+  "#ffd166",
+  "#ffffff",
+  "#bd8cff",
+  "#ff9fba"
+ ];
+
+ for(let i=0;i<90;i++){
+
+  const piece=document.createElement("div");
+
+  piece.className="confetti-piece";
+
+  piece.style.left=Math.random()*100+"%";
+
+  piece.style.background=
+   colors[Math.floor(Math.random()*colors.length)];
+
+  piece.style.animationDelay=
+   Math.random()*1.5+"s";
+
+  piece.style.animationDuration=
+   (2+Math.random()*2)+"s";
+
+  container.appendChild(piece);
+ }
+
+ setTimeout(()=>{
+  container.innerHTML="";
+ },6000);
+}
+
+</script>
+
+</body>
+</html>
