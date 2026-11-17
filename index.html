@@ -423,6 +423,54 @@ const input=document.getElementById("photoInput");
 const shuffleBtn=document.getElementById("shuffleBtn");
 const previewBtn=document.getElementById("previewBtn");
 const restartBtn=document.getElementById("restartBtn");
+ 
+function loadDefaultPhoto(){
+
+ const img=new Image();
+
+ img.onload=function(){
+
+  const canvas=document.createElement("canvas");
+  const ctx=canvas.getContext("2d");
+
+  const side=Math.min(img.naturalWidth,img.naturalHeight);
+  const x=(img.naturalWidth-side)/2;
+  const y=(img.naturalHeight-side)/2;
+
+  canvas.width=600;
+  canvas.height=600;
+
+  ctx.drawImage(
+   img,x,y,side,side,
+   0,0,600,600
+  );
+
+  photoURL=canvas.toDataURL("image/jpeg",0.9);
+
+  document.getElementById("preview").src=photoURL;
+
+  photoReady=true;
+
+  shuffleBtn.disabled=false;
+  previewBtn.disabled=false;
+  restartBtn.disabled=false;
+
+  message.innerText=
+   "Selamat bermain! Susun foto Nurul menjadi gambar utuh 💗";
+
+  shuffleGame();
+ };
+
+ img.onerror=function(){
+  message.innerText=
+   "Foto nurul.jpg belum ditemukan. Periksa repository GitHub.";
+ };
+
+ img.src="nurul.jpg";
+}
+
+loadDefaultPhoto();
+
 
 input.addEventListener("change",function(){
 
