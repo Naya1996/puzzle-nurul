@@ -4,9 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080e20">
-
-<title>NURUL PHOTO PUZZLE</title>
+<meta name="theme-color" content="#090d20">
+<title>NURUL PHOTO PUZZLE | PREMIUM</title>
 
 <style>
 *{
@@ -15,47 +14,93 @@
  padding:0;
 }
 
+:root{
+ --pink:#ff80b5;
+ --purple:#a78bfa;
+ --white:#f8f7ff;
+ --muted:#aab5d0;
+ --panel:rgba(24,32,61,.78);
+}
+
 body{
  min-height:100vh;
- padding:20px 12px;
- background:radial-gradient(circle at top,#26385d,#080e20 75%);
- color:white;
+ padding:25px 14px;
  font-family:Arial,sans-serif;
+ color:var(--white);
  text-align:center;
+ background:
+ radial-gradient(circle at 10% 5%,#49315e 0,transparent 35%),
+ radial-gradient(circle at 90% 90%,#263d67 0,transparent 35%),
+ linear-gradient(145deg,#080d20,#111a35 60%,#090d20);
+ overflow-x:hidden;
+}
+
+header{
+ margin:10px auto 22px;
+}
+
+.logo{
+ width:65px;
+ height:65px;
+ display:grid;
+ place-items:center;
+ margin:auto auto 15px;
+ border-radius:22px;
+ background:linear-gradient(135deg,var(--pink),var(--purple));
+ box-shadow:0 8px 30px #ff80b555;
+ font-size:32px;
 }
 
 h1{
- color:#ff91bd;
- font-size:25px;
+ font-size:clamp(23px,6vw,32px);
  letter-spacing:2px;
- margin:12px 0;
+ background:linear-gradient(90deg,#ffadd0,#ffffff,#c4b5fd);
+ -webkit-background-clip:text;
+ color:transparent;
 }
 
 .subtitle{
- color:#c4cee2;
- margin-bottom:20px;
+ color:var(--muted);
+ font-size:13px;
+ margin-top:9px;
+ letter-spacing:1px;
 }
 
 .panel{
- max-width:480px;
+ width:100%;
+ max-width:490px;
  margin:auto;
- padding:16px;
- background:#111d35;
- border:1px solid #405071;
- border-radius:22px;
- box-shadow:0 15px 40px #0007;
+ padding:19px;
+ background:var(--panel);
+ border:1px solid #ffffff20;
+ border-radius:25px;
+ box-shadow:0 20px 55px #0007;
+ backdrop-filter:blur(18px);
+}
+
+.section-title{
+ text-align:left;
+ color:#e9d5ff;
+ font-size:13px;
+ margin:0 0 12px;
+ letter-spacing:1px;
 }
 
 .upload{
  display:block;
- padding:14px;
- background:#202f4c;
+ padding:17px 12px;
  border:1px dashed #ff91bd;
- border-radius:12px;
- margin-bottom:15px;
+ border-radius:16px;
+ background:#ff80b510;
  color:#ffb6d2;
+ font-size:13px;
  font-weight:bold;
  cursor:pointer;
+ transition:.3s;
+}
+
+.upload:active{
+ transform:scale(.98);
 }
 
 .upload input{
@@ -63,25 +108,61 @@ h1{
 }
 
 .stats{
- display:flex;
- gap:8px;
- margin-bottom:15px;
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:9px;
+ margin:17px 0;
 }
 
-.stats div{
- flex:1;
- padding:11px 5px;
- background:#202f4c;
- border-radius:12px;
- font-size:12px;
- color:#cbd4e8;
+.stat{
+ padding:13px 5px;
+ border-radius:15px;
+ background:linear-gradient(145deg,#ffffff12,#ffffff05);
+ border:1px solid #ffffff12;
 }
 
-.stats b{
+.stat span{
  display:block;
- color:#ff9bc5;
- font-size:21px;
- margin-top:5px;
+ font-size:10px;
+ letter-spacing:1px;
+ color:var(--muted);
+}
+
+.stat b{
+ display:block;
+ font-size:22px;
+ margin-top:7px;
+ color:var(--pink);
+ font-variant-numeric:tabular-nums;
+}
+
+.progress-area{
+ margin:0 0 16px;
+ text-align:left;
+}
+
+.progress-label{
+ display:flex;
+ justify-content:space-between;
+ color:var(--muted);
+ font-size:11px;
+ margin-bottom:8px;
+}
+
+.progress-track{
+ width:100%;
+ height:8px;
+ background:#ffffff15;
+ border-radius:20px;
+ overflow:hidden;
+}
+
+#progressBar{
+ width:0%;
+ height:100%;
+ border-radius:20px;
+ background:linear-gradient(90deg,var(--pink),var(--purple));
+ transition:width .3s;
 }
 
 #puzzle{
@@ -90,97 +171,93 @@ h1{
  gap:3px;
  width:100%;
  aspect-ratio:1;
- padding:4px;
- background:#35445f;
- border-radius:10px;
+ padding:5px;
+ background:#ffffff14;
+ border:1px solid #ffffff25;
+ border-radius:15px;
  overflow:hidden;
 }
 
 .tile{
  min-width:0;
  min-height:0;
- border:1px solid #8292af;
- border-radius:3px;
+ border:1px solid #ffffff40;
+ border-radius:4px;
  background-repeat:no-repeat;
  cursor:pointer;
  touch-action:manipulation;
- transition:transform .15s,filter .15s;
+ transition:transform .16s,filter .16s,border .16s;
+}
+
+.tile:active{
+ transform:scale(.94);
 }
 
 .tile.selected{
  border:3px solid #ff65a9;
  transform:scale(.91);
- filter:brightness(1.35);
+ filter:brightness(1.4);
+ box-shadow:0 0 12px #ff65a9;
+}
+
+.actions{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:8px;
+ margin-top:16px;
 }
 
 button{
  border:0;
- padding:12px 13px;
- margin:5px 2px;
- border-radius:11px;
- background:#ff83b8;
- color:#17172b;
+ padding:13px 5px;
+ border-radius:12px;
+ background:linear-gradient(135deg,#ff9bc5,#d6a7ff);
+ color:#21142e;
+ font-size:11px;
  font-weight:bold;
  cursor:pointer;
- font-size:12px;
+ transition:.2s;
 }
 
 button:active{
- transform:scale(.95);
+ transform:scale(.94);
 }
 
 button:disabled{
- opacity:.4;
+ opacity:.35;
+ cursor:not-allowed;
 }
 
 #message{
- color:#ffb6d2;
- margin-top:15px;
- line-height:1.7;
+ color:#ffc3dc;
+ font-size:13px;
+ line-height:1.8;
+ margin-top:17px;
 }
 
 #preview{
  display:none;
  width:100%;
- margin-top:15px;
+ margin-top:16px;
  border:2px solid #ff91bd;
- border-radius:12px;
+ border-radius:16px;
+ box-shadow:0 10px 25px #0005;
 }
 
 #preview.show{
  display:block;
+ animation:appear .4s ease;
 }
 
 .footer{
+ margin:23px auto 5px;
  color:#8998b4;
- font-size:12px;
- margin-top:22px;
+ font-size:11px;
+ letter-spacing:2px;
 }
 
-.victory{
- padding:22px 8px;
- animation:appear 1s ease;
-}
-
-.victory h2{
- color:#ff91bd;
- font-size:24px;
- margin:15px 0;
-}
-
-.victory h3{
- color:#ff91bd;
- margin:15px 0;
-}
-
-.victory p{
- line-height:1.8;
- margin:12px 0;
-}
-
-.heart{
- font-size:36px;
- animation:heartbeat 1s infinite;
+.footer strong{
+ color:#ff9bc5;
 }
 
 #confetti{
@@ -188,7 +265,7 @@ button:disabled{
  inset:0;
  pointer-events:none;
  overflow:hidden;
- z-index:10;
+ z-index:20;
 }
 
 .confetti-piece{
@@ -199,9 +276,38 @@ button:disabled{
  animation:fall 3s linear forwards;
 }
 
+.victory{
+ padding:20px 5px;
+ animation:appear .8s ease;
+}
+
+.victory h2{
+ color:#ff9bc5;
+ font-size:23px;
+ margin:15px 0;
+}
+
+.victory h3{
+ color:#d6a7ff;
+ margin:16px 0;
+ font-size:16px;
+}
+
+.victory p{
+ line-height:1.9;
+ margin:13px 0;
+ color:#e3e6f4;
+ font-size:13px;
+}
+
+.heart{
+ font-size:38px;
+ animation:heartbeat 1s infinite;
+}
+
 @keyframes appear{
- from{opacity:0;transform:scale(.5)}
- to{opacity:1;transform:scale(1)}
+ from{opacity:0;transform:translateY(15px) scale(.95)}
+ to{opacity:1;transform:translateY(0) scale(1)}
 }
 
 @keyframes heartbeat{
@@ -214,76 +320,89 @@ button:disabled{
   opacity:0;
  }
 }
+
+@media(max-width:360px){
+ .panel{padding:13px}
+ .stats{gap:5px}
+ .stat b{font-size:19px}
+ button{font-size:10px}
+}
 </style>
 </head>
 
 <body>
 
-<h1>💗 NURUL PHOTO PUZZLE</h1>
-
-<p class="subtitle">
- A Special Challenge Just For You
-</p>
+<header>
+ <div class="logo">💗</div>
+ <h1>NURUL PHOTO PUZZLE</h1>
+ <p class="subtitle">A SPECIAL CHALLENGE JUST FOR YOU</p>
+</header>
 
 <div class="panel">
 
-<label class="upload">
- 📷 PILIH FOTO DARI GALERI
- <input
-  type="file"
-  id="photoInput"
-  accept="image/*">
-</label>
+ <p class="section-title">01 / CHOOSE YOUR PHOTO</p>
 
-<div class="stats">
+ <label class="upload">
+  📷 &nbsp; PILIH FOTO DARI GALERI
+  <input type="file" id="photoInput" accept="image/*">
+ </label>
 
- <div>
-  TIME
-  <b id="time">00:00</b>
+ <div class="stats">
+  <div class="stat">
+   <span>TIME</span>
+   <b id="time">00:00</b>
+  </div>
+  <div class="stat">
+   <span>MOVES</span>
+   <b id="moves">0</b>
+  </div>
+  <div class="stat">
+   <span>PROGRESS</span>
+   <b id="progress">0%</b>
+  </div>
  </div>
 
- <div>
-  MOVES
-  <b id="moves">0</b>
+ <div class="progress-area">
+  <div class="progress-label">
+   <span>PUZZLE COMPLETION</span>
+   <span id="progressText">0 / 36</span>
+  </div>
+  <div class="progress-track">
+   <div id="progressBar"></div>
+  </div>
  </div>
 
- <div>
-  PROGRESS
-  <b id="progress">0%</b>
+ <p class="section-title">02 / COMPLETE THE PUZZLE</p>
+
+ <div id="puzzle"></div>
+
+ <div class="actions">
+  <button onclick="shuffleGame()" id="shuffleBtn" disabled>
+   🔀 SHUFFLE
+  </button>
+  <button onclick="togglePreview()" id="previewBtn" disabled>
+   👁 PREVIEW
+  </button>
+  <button onclick="shuffleGame()" id="restartBtn" disabled>
+   ↻ RESTART
+  </button>
  </div>
 
-</div>
+ <div id="message">
+  Pilih foto terlebih dahulu untuk memulai permainan! 💕
+ </div>
 
-<div id="puzzle"></div>
-
-<div id="message">
- Pilih foto terlebih dahulu untuk memulai permainan! 💕
-</div>
-
-<button onclick="shuffleGame()" id="shuffleBtn" disabled>
- 🔀 SHUFFLE
-</button>
-
-<button onclick="togglePreview()" id="previewBtn" disabled>
- 👁 PREVIEW
-</button>
-
-<button onclick="shuffleGame()" id="restartBtn" disabled>
- ↻ RESTART
-</button>
-
-<img id="preview" alt="Foto asli">
+ <img id="preview" alt="Foto asli">
 
 </div>
 
 <div class="footer">
- DEVELOPED WITH ❤️ BY DERiiLNAY
+ DEVELOPED WITH <strong>❤️ DERiiLNAY</strong>
 </div>
 
 <div id="confetti"></div>
 
 <script>
-
 const SIZE=6;
 const TOTAL=SIZE*SIZE;
 
@@ -308,7 +427,6 @@ const restartBtn=document.getElementById("restartBtn");
 input.addEventListener("change",function(){
 
  const file=this.files[0];
-
  if(!file)return;
 
  if(!file.type.startsWith("image/")){
@@ -319,29 +437,20 @@ input.addEventListener("change",function(){
  const reader=new FileReader();
 
  reader.onload=function(e){
-
   const img=new Image();
 
   img.onload=function(){
-
    const canvas=document.createElement("canvas");
    const ctx=canvas.getContext("2d");
 
-   const side=Math.min(
-    img.naturalWidth,
-    img.naturalHeight
-   );
-
+   const side=Math.min(img.naturalWidth,img.naturalHeight);
    const x=(img.naturalWidth-side)/2;
    const y=(img.naturalHeight-side)/2;
 
    canvas.width=600;
    canvas.height=600;
 
-   ctx.drawImage(
-    img,x,y,side,side,
-    0,0,600,600
-   );
+   ctx.drawImage(img,x,y,side,side,0,0,600,600);
 
    photoURL=canvas.toDataURL("image/jpeg",0.9);
 
@@ -353,17 +462,19 @@ input.addEventListener("change",function(){
    previewBtn.disabled=false;
    restartBtn.disabled=false;
 
-   message.innerText=
-    "Foto berhasil dimuat! Siap bermain? 💗";
+   message.innerText="Foto berhasil dimuat! Siap bermain? 💗";
 
    shuffleGame();
+  };
+
+  img.onerror=function(){
+   message.innerText="Foto tidak dapat dibaca. Coba foto lain.";
   };
 
   img.src=e.target.result;
  };
 
  reader.readAsDataURL(file);
-
 });
 
 function shuffleGame(){
@@ -372,24 +483,15 @@ function shuffleGame(){
 
  clearInterval(timer);
 
- order=Array.from(
-  {length:TOTAL},
-  (_,i)=>i
- );
+ order=Array.from({length:TOTAL},(_,i)=>i);
 
- // Acak dengan Fisher-Yates
  for(let i=order.length-1;i>0;i--){
-
   let j=Math.floor(Math.random()*(i+1));
-
-  [order[i],order[j]]=
-  [order[j],order[i]];
+  [order[i],order[j]]=[order[j],order[i]];
  }
 
- // Pastikan tidak langsung selesai
  if(order.every((v,i)=>v===i)){
-  [order[0],order[1]]=
-  [order[1],order[0]];
+  [order[0],order[1]]=[order[1],order[0]];
  }
 
  selected=null;
@@ -399,12 +501,12 @@ function shuffleGame(){
 
  document.getElementById("preview").classList.remove("show");
  previewVisible=false;
+ previewBtn.innerText="👁 PREVIEW";
 
  render();
  updateStats();
 
- message.innerText=
-  "Susun 36 potongan foto hingga menjadi gambar utuh!";
+ message.innerText="Susun 36 potongan foto hingga menjadi gambar utuh!";
 
  timer=setInterval(()=>{
   if(started){
@@ -421,29 +523,22 @@ function render(){
  order.forEach((value,index)=>{
 
   const tile=document.createElement("div");
-
   tile.className="tile";
 
   const row=Math.floor(value/SIZE);
   const col=value%SIZE;
 
   tile.style.backgroundImage=`url("${photoURL}")`;
-
   tile.style.backgroundSize="600% 600%";
-
-  tile.style.backgroundPosition=
-   `${col*20}% ${row*20}%`;
+  tile.style.backgroundPosition=`${col*20}% ${row*20}%`;
 
   if(selected===index){
    tile.classList.add("selected");
   }
 
-  tile.addEventListener("click",()=>{
-   chooseTile(index);
-  });
+  tile.addEventListener("click",()=>chooseTile(index));
 
   puzzle.appendChild(tile);
-
  });
 }
 
@@ -463,8 +558,7 @@ function chooseTile(index){
   return;
  }
 
- [order[selected],order[index]]=
- [order[index],order[selected]];
+ [order[selected],order[index]]=[order[index],order[selected]];
 
  selected=null;
  moves++;
@@ -479,26 +573,18 @@ function chooseTile(index){
 
 function updateStats(){
 
- const min=String(
-  Math.floor(seconds/60)
- ).padStart(2,"0");
+ const min=String(Math.floor(seconds/60)).padStart(2,"0");
+ const sec=String(seconds%60).padStart(2,"0");
 
- const sec=String(
-  seconds%60
- ).padStart(2,"0");
+ document.getElementById("time").innerText=min+":"+sec;
+ document.getElementById("moves").innerText=moves;
 
- document.getElementById("time").innerText=
- min+":"+sec;
+ const correct=order.filter((v,i)=>v===i).length;
+ const percent=Math.round(correct/TOTAL*100);
 
- document.getElementById("moves").innerText=
- moves;
-
- const correct=order.filter(
-  (v,i)=>v===i
- ).length;
-
- document.getElementById("progress").innerText=
- Math.round(correct/TOTAL*100)+"%";
+ document.getElementById("progress").innerText=percent+"%";
+ document.getElementById("progressText").innerText=correct+" / "+TOTAL;
+ document.getElementById("progressBar").style.width=percent+"%";
 }
 
 function togglePreview(){
@@ -506,14 +592,9 @@ function togglePreview(){
  const preview=document.getElementById("preview");
 
  previewVisible=!previewVisible;
+ preview.classList.toggle("show",previewVisible);
 
- preview.classList.toggle(
-  "show",
-  previewVisible
- );
-
- previewBtn.innerText=
-  previewVisible?"🙈 HIDE PREVIEW":"👁 PREVIEW";
+ previewBtn.innerText=previewVisible?"🙈 HIDE":"👁 PREVIEW";
 }
 
 function winGame(){
@@ -524,9 +605,10 @@ function winGame(){
  updateStats();
 
  document.getElementById("progress").innerText="100%";
+ document.getElementById("progressText").innerText="36 / 36";
+ document.getElementById("progressBar").style.width="100%";
 
  message.innerHTML=`
-
  <div class="victory">
 
   <div class="heart">💖🌸💖</div>
@@ -554,9 +636,7 @@ function winGame(){
 
   <div class="heart">💕🌷💕</div>
 
-  <p>
-   Keep smiling and keep shining!
-  </p>
+  <p>Keep smiling and keep shining!</p>
 
   <h3>WITH LOVE, DERiiLNAY ❤️</h3>
 
@@ -569,42 +649,24 @@ function winGame(){
 function launchConfetti(){
 
  const container=document.getElementById("confetti");
-
  container.innerHTML="";
 
- const colors=[
-  "#ff70ad",
-  "#ffd166",
-  "#ffffff",
-  "#bd8cff",
-  "#ff9fba"
- ];
+ const colors=["#ff70ad","#ffd166","#ffffff","#bd8cff","#ff9fba"];
 
  for(let i=0;i<90;i++){
-
   const piece=document.createElement("div");
 
   piece.className="confetti-piece";
-
   piece.style.left=Math.random()*100+"%";
-
-  piece.style.background=
-   colors[Math.floor(Math.random()*colors.length)];
-
-  piece.style.animationDelay=
-   Math.random()*1.5+"s";
-
-  piece.style.animationDuration=
-   (2+Math.random()*2)+"s";
+  piece.style.background=colors[Math.floor(Math.random()*colors.length)];
+  piece.style.animationDelay=Math.random()*1.5+"s";
+  piece.style.animationDuration=(2+Math.random()*2)+"s";
 
   container.appendChild(piece);
  }
 
- setTimeout(()=>{
-  container.innerHTML="";
- },6000);
+ setTimeout(()=>container.innerHTML="",6000);
 }
-
 </script>
 
 </body>
